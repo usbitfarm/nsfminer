@@ -38,6 +38,8 @@ build_script:
 
     cmake --build . --config Release --target package
 
+    dir %APPVEYOR_BUILD_FOLDER%\build\nsfminer
+
     7z a %APPVEYOR_BUILD_FOLDER%\nsfminer.zip -r %APPVEYOR_BUILD_FOLDER%\build\nsfminer\Release\nsfminer.exe
 test: off
 artifacts:
