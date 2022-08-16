@@ -8,19 +8,19 @@ build_script:
 
     set CUDA_DIR=C:\CUDA
 
-    set CUDA_ARCHIVE=cuda_11.3.0_465.89_win10
+    set CUDA_ARCHIVE=cuda_11.7.1_516.94_windows
 
 
-    curl -L https://developer.download.nvidia.com/compute/cuda/11.3.0/local_installers/%CUDA_ARCHIVE%.exe -o cuda.exe
+    curl -L https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/%CUDA_ARCHIVE%.exe -o cuda.exe
 
 
     cuda.exe -s
 
 
-    set PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v11.3\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v11.3\libnvvp;%PATH%;
+    set PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v11.7\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v11.7\libnvvp;%PATH%;
 
 
-    set "CUDA_PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v11.3"
+    set "CUDA_PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v11.7"
 
     nvcc -V
 
