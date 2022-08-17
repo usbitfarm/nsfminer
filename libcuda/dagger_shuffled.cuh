@@ -25,7 +25,7 @@ DEV_INLINE bool compute_hash(uint64_t nonce) {
 
     // Threads work together in this phase in groups of 8.
     const int thread_id = threadIdx.x & (THREADS_PER_HASH - 1);
-    const int mix_idx = thread_id & 3;
+    const int mix_idx = (thread_id & 3) * 2;
 
     for (int i = 0; i < THREADS_PER_HASH; i += _PARALLEL_HASH) {
         uint4 mix[_PARALLEL_HASH];
