@@ -241,18 +241,11 @@ typedef union
     uint uints[16];
 } compute_hash_share;
 
-// computes a mod dag_size
-static uint mod(uint a, uint dag_size, uint dag_inv, uint dag_shift) {
-    uint d = mul_hi(a, dag_inv) >> dag_shift;
-    uint r = a - d * dag_size;
-    return r;
-}
-
 #ifdef SPLIT_DAG
 #define MIX(x)                                                                       \
     do                                                                               \
     {                                                                                \
-        buffer[get_local_id(0)] = mod(fnv(init0 ^ (a + x), ((uint*)&mix)[x]), dag_size, dag_inv, dag_shift); \
+        buffer[get_local_id(0)] = fnv(init0 ^ (a + x), ((uint*)&mix)[x]) % dag_size; \
         uint idx = buffer[lane_idx];                                                 \
         __global hash128_t const* g_dag =                                            \
             (__global hash128_t const*)_g_dag2[idx & 1];                             \
@@ -263,8 +256,10 @@ static uint mod(uint a, uint dag_size, uint dag_inv, uint dag_shift) {
 #define MIX(x)                                                                       \
     do                                                                               \
     {                                                                                \
-        buffer[get_local_id(0)] = mod(fnv(init0 ^ (a + x), ((uint*)&mix)[x]), dag_size, dag_inv, dag_shift); \
-        mix = fnv(mix, g_dag_uint[(buffer[lane_idx]*4)+thread_id]);                                \
+        buffer[get_local_id(0)] = fnv(init0 ^ (a + x), ((uint*)&mix)[x]) % dag_size; \
+        uint idx = buffer[lane_idx];                                                 \
+        __global hash128_t const* g_dag = (__global hash128_t const*)_g_dag0;        \
+        mix = fnv(mix, g_dag[idx].uint8s[thread_id]);  
         mem_fence(CLK_LOCAL_MEM_FENCE);                                              \
     } while (0)
 #endif
@@ -285,9 +280,8 @@ __attribute__((reqd_work_group_size(WORKSIZE, 1, 1))) __kernel void search(
     __global ulong8 const* _g_dag1,             //3
     uint dag_size,                              //4
     ulong start_nonce,                          //5
-    ulong target,                               //6
-    uint dag_inv,                               //7
-    uint dag_shift)                             //8
+    ulong target                                //6
+    )                                           //8
 {
     if (g_output->abort)
         return;
@@ -299,7 +293,6 @@ __attribute__((reqd_work_group_size(WORKSIZE, 1, 1))) __kernel void search(
     __global const ulong8* _g_dag2[2] = {_g_dag0, _g_dag1};
 #endif
 
-    __global uint8 const* g_dag_uint = (__global uint8 const*)_g_dag0;
 
     __local compute_hash_share sharebuf[WORKSIZE / 4];
     __local uint buffer[WORKSIZE];

@@ -576,8 +576,7 @@ bool CLMiner::initEpoch() {
     }
 
     try {
-        // char options[256] = {0};
-        char options[66] = "-cl-mad-enable -cl-finite-math-only -cl-unsafe-math-optimizations";
+        char options[256] = {0};
         int computeCapability = 0;
 
         // Nvidia
@@ -595,8 +594,6 @@ bool CLMiner::initEpoch() {
         m_abortqueue = new cl::CommandQueue(*m_context, m_device);
 
         m_dagItems = m_epochContext.dagNumItems;
-        m_dagInv = m_epochContext.dagInv;
-        m_dagShift = m_epochContext.dagShift;
 
         bool dagOk = true;
         // create buffer for dag
@@ -680,8 +677,6 @@ bool CLMiner::initEpoch() {
         m_searchKernel.setArg(2, *m_dag[0]);
         m_searchKernel.setArg(3, *m_dag[1]);
         m_searchKernel.setArg(4, m_dagItems);
-        m_searchKernel.setArg(7, m_dagInv);
-        m_searchKernel.setArg(8, m_dagShift);
 
         m_queue->enqueueWriteBuffer(*m_searchBuffer, CL_FALSE, 0, sizeof(zerox3), zerox3);
 
