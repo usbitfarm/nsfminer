@@ -175,7 +175,7 @@ void CUDAMiner::workLoop() {
 
             // adjust work multiplier
             float hr = RetrieveHashRate();
-            if (hr >= 1e7) {
+            if (hr >= 1e7)
                 m_block_multiple = uint32_t((hr * CU_TARGET_BATCH_TIME) /
                                             (m_deviceDescriptor.cuStreamSize * m_deviceDescriptor.cuBlockSize));
 
